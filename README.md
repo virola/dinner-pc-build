@@ -49,7 +49,7 @@ git clone [gitUrl]
 - 安装依赖
 
 ```bash
-cd vue-vben-admin
+cd [folder]
 
 yarn install
 
