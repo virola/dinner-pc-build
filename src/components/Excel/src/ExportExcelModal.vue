@@ -1,0 +1,101 @@
+<template>
+  <BasicModal
+    v-bind="$attrs"
+    :title="t('component.excel.exportModalTitle')"
+    @ok="handleOk"
+    @register="registerModal"
+  >
+    <BasicForm
+      :labelWidth="100"
+      :schemas="schemas"
+      :showActionButtonGroup="false"
+      @register="registerForm"
+    />
+  </BasicModal>
+</template>
+<script lang="ts">
+  import type { ExportModalResult } from './typing';
+  import { defineComponent } from 'vue';
+  import { BasicModal, useModalInner } from '/@/components/Modal';
+  import { BasicForm, FormSchema, useForm } from '/@/components/Form/index';
+
+  import { useI18n } from '/@/hooks/web/useI18n';
+
+  const { t } = useI18n();
+
+  export default defineComponent({
+    components: { BasicModal, BasicForm },
+    props: {
+      defaultName: String,
+    },
+    emits: ['success', 'register'],
+    setup(props, { emit }) {
+      const schemas: FormSchema[] = [
+        {
+          field: 'filename',
+          component: 'Input',
+          label: t('component.excel.fileName'),
+          rules: [{ required: true }],
+          defaultValue: props.defaultName || '',
+          colProps: {
+            span: 24,
+          },
+        },
+        // {
+        //   field: 'bookType',
+        //   component: 'Select',
+        //   label: t('component.excel.fileType'),
+        //   defaultValue: 'xlsx',
+        //   rules: [{ required: true }],
+        //   componentProps: {
+        //     options: [
+        //       {
+        //         label: 'xlsx',
+        //         value: 'xlsx',
+        //         key: 'xlsx',
+        //       },
+        //       {
+        //         label: 'html',
+        //         value: 'html',
+        //         key: 'html',
+        //       },
+        //       {
+        //         label: 'csv',
+        //         value: 'csv',
+        //         key: 'csv',
+        //       },
+        //       {
+        //         label: 'txt',
+        //         value: 'txt',
+        //         key: 'txt',
+        //       },
+        //     ],
+        //   },
+        // },
+      ];
+
+      const [registerForm, { validateFields }] = useForm();
+      const [registerModal, { closeModal }] = useModalInner();
+
+      async function handleOk() {
+        const res = (await validateFields().catch((_) => ({}))) as ExportModalResult;
+        const { filename, bookType = 'xlsx' } = res;
+        if (filename) {
+          emit('success', {
+            filename: `${filename.split('.').shift()}.${bookType}`,
+            bookType,
+          });
+          closeModal();
+        }
+      }
+
+      return {
+        schemas,
+        handleOk,
+        registerForm,
+        registerModal,
+        t,
+      };
+    },
+  });
+</script>
