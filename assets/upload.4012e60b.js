@@ -1,0 +1,1 @@
+import{u as i,dA as o}from"./index.051b8e6d.js";const{uploadUrl:a=""}=i();function p(u,t){return o.uploadFile({url:a,onUploadProgress:t},u)}function r(u,t){return o.uploadFile({url:a,onUploadProgress:t},u)}export{r as i,p as u};
